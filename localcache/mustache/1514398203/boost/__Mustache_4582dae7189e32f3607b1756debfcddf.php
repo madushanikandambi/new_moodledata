@@ -1,0 +1,60 @@
+<?php
+
+class __Mustache_4582dae7189e32f3607b1756debfcddf extends Mustache_Template
+{
+    private $lambdaHelper;
+
+    public function renderInternal(Mustache_Context $context, $indent = '')
+    {
+        $this->lambdaHelper = new Mustache_LambdaHelper($this->mustache, $context);
+        $buffer = '';
+        $blocksContext = array();
+
+        if ($partial = $this->mustache->loadPartial('mod_assign/loading')) {
+            $buffer .= $partial->renderInternal($context);
+        }
+        // 'js' section
+        $value = $context->find('js');
+        $buffer .= $this->sectionC6561da3e520435f9290ce54ae98bd10($context, $indent, $value);
+
+        return $buffer;
+    }
+
+    private function sectionC6561da3e520435f9290ce54ae98bd10(Mustache_Context $context, $indent, $value)
+    {
+        $buffer = '';
+        $blocksContext = array();
+    
+        if (!is_string($value) && is_callable($value)) {
+            $source = '
+require([\'mod_assign/grading_panel\'], function(GradingPanel) {
+    new GradingPanel(\'[data-region="grade"]\');
+});
+';
+            $result = call_user_func($value, $source, $this->lambdaHelper);
+            if (strpos($result, '{{') === false) {
+                $buffer .= $result;
+            } else {
+                $buffer .= $this->mustache
+                    ->loadLambda((string) $result)
+                    ->renderInternal($context);
+            }
+        } elseif (!empty($value)) {
+            $values = $this->isIterable($value) ? $value : array($value);
+            foreach ($values as $value) {
+                $context->push($value);
+                
+                $buffer .= $indent . 'require([\'mod_assign/grading_panel\'], function(GradingPanel) {
+';
+                $buffer .= $indent . '    new GradingPanel(\'[data-region="grade"]\');
+';
+                $buffer .= $indent . '});
+';
+                $context->pop();
+            }
+        }
+    
+        return $buffer;
+    }
+
+}
